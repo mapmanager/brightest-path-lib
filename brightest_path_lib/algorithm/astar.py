@@ -3,11 +3,19 @@ import math
 import numpy as np
 from queue import PriorityQueue
 from typing import List
-from brightest_path_lib.cost import Reciprocal
-from brightest_path_lib.heuristic import Euclidean
-from brightest_path_lib.image import ImageStats
-from brightest_path_lib.input import CostFunction, HeuristicFunction
-from brightest_path_lib.node import Node
+
+import sys
+sys.path.append("..")
+from cost import reciprocal
+from heuristic import euclidean
+from image import stats
+from input import inputs
+from node import node
+# from cost import Reciprocal
+# from heuristic import Euclidean
+# from image import ImageStats
+# from input import CostFunction, HeuristicFunction
+# from node import Node
 
 
 class AStarSearch:
@@ -63,22 +71,22 @@ class AStarSearch:
         start_point: np.ndarray,
         goal_point: np.ndarray,
         scale: np.ndarray = np.array([1.0, 1.0]),
-        cost_function: CostFunction = CostFunction.RECIPROCAL,
-        heuristic_function: HeuristicFunction = HeuristicFunction.EUCLIDEAN
+        cost_function: inputs.CostFunction = inputs.CostFunction.RECIPROCAL,
+        heuristic_function: inputs.HeuristicFunction = inputs.HeuristicFunction.EUCLIDEAN
     ):
         self.image = image
-        self.image_stats = ImageStats(image)
+        self.image_stats = stats.ImageStats(image)
         self.start_point = start_point
         self.goal_point = goal_point
         self.scale = scale
 
-        if cost_function == CostFunction.RECIPROCAL:
-            self.cost_function = Reciprocal(
+        if cost_function == inputs.CostFunction.RECIPROCAL:
+            self.cost_function = reciprocal.Reciprocal(
                 min_intensity=self.image_stats.min_intensity, 
                 max_intensity=self.image_stats.max_intensity)
         
-        if heuristic_function == HeuristicFunction.EUCLIDEAN:
-            self.heuristic_function = Euclidean(scale=self.scale)
+        if heuristic_function == inputs.HeuristicFunction.EUCLIDEAN:
+            self.heuristic_function = euclidean.Euclidean(scale=self.scale)
         
         self.result = []  
 
@@ -94,7 +102,7 @@ class AStarSearch:
         """
         count = 0
         open_set = PriorityQueue()
-        start_node = Node(
+        start_node = node.Node(
             point=self.start_point, 
             g_score=0, 
             h_score=self._estimate_cost_to_goal(self.start_point), 
@@ -149,7 +157,7 @@ class AStarSearch:
         """
         return float("inf")
     
-    def _find_neighbors_of(self, node: Node) -> List[Node]:
+    def _find_neighbors_of(self, node: node.Node) -> List[node.Node]:
         """Finds the neighbors of a node (2D/3D)
 
         Parameters
@@ -167,7 +175,7 @@ class AStarSearch:
         else:
             return self._find_3D_neighbors_of(node)
     
-    def _find_2D_neighbors_of(self, node: Node) -> List[Node]:
+    def _find_2D_neighbors_of(self, node: node.Node) -> List[node.Node]:
         """Finds the neighbors of a 2D node
 
         Parameters
@@ -215,7 +223,7 @@ class AStarSearch:
                     cost_of_moving_to_new_point = self.cost_function.minimum_step_cost()
 
                 g_for_new_point = node.g_score + math.sqrt((xdiff*xdiff) + (ydiff*ydiff)) * cost_of_moving_to_new_point
-                neighbor = Node(
+                neighbor = node.Node(
                     point=new_point,
                     g_score=g_for_new_point,
                     h_score=h_for_new_point,
@@ -226,17 +234,17 @@ class AStarSearch:
 
         return neighbors
 
-    def _find_3D_neighbors_of(self, node: Node) -> List[Node]:
+    def _find_3D_neighbors_of(self, node: node.Node) -> List[node.Node]:
         """Finds the neighbors of a 3D node
 
         Parameters
         ----------
-        node : Node
+        node : node.Node
             the node whose neighbors we are interested in
 
         Returns
         -------
-        List[Node]
+        List[node.Node]
             a list of nodes that are the neighbors of the given node
         
         Notes
@@ -286,7 +294,7 @@ class AStarSearch:
                         cost_of_moving_to_new_point = self.cost_function.minimum_step_cost()
 
                     g_for_new_point = node.g_score + math.sqrt((xdiff*xdiff) + (ydiff*ydiff) + (zdiff*zdiff)) * cost_of_moving_to_new_point
-                    neighbor = Node(
+                    neighbor = node.Node(
                         point=new_point,
                         g_score=g_for_new_point,
                         h_score=h_for_new_point,
@@ -332,7 +340,7 @@ class AStarSearch:
             current_point=point, goal_point=self.goal_point
         )
 
-    def _construct_path_from(self, node: Node):
+    def _construct_path_from(self, node: node.Node):
         """stores the coodinates of nodes that constitute the brightest path 
         from the goal_point to the start_point once the goal is reached.
 
