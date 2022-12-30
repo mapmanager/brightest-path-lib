@@ -14,8 +14,7 @@ from node import Node
 class AStarSearch:
     """Class that implements the A-Star Search Algorithm
 
-    Parameters
-    ----------
+    Parameters:
     image : numpy ndarray
         the image where A star search is suppossed to run on
     start_point : numpy ndarray
