@@ -20,7 +20,8 @@ setup(
         "brightest_path_lib",
         "brightest_path_lib.*",
         "brightest_path_lib.algorithm",
-        "brightest_path_lib.input"
+        "brightest_path_lib.input",
+        "brightest_path_lib.thread"
         ]),
     install_requires=["numpy"],
     extras_require={"test": ["pytest", "pytest-cov", "scikit-image", "pooch"]},
