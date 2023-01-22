@@ -1,9 +1,18 @@
-from brightest_path_lib.heuristic import Heuristic
+# from brightest_path_lib.heuristic import Heuristic
 import math
-import numpy as np
+import numba as nb
+from numba.experimental import jitclass
+# import numpy as np
 from typing import Tuple
 
-class Euclidean(Heuristic):
+specs_euclidean = {}
+specs_euclidean['scale_x'] = nb.float32
+specs_euclidean['scale_y'] = nb.float32
+specs_euclidean['scale_z'] = nb.float32
+
+@jitclass(specs_euclidean)
+class Euclidean():
+# class Euclidean(Heuristic):
     """heuristic cost estimation using Euclidean distance from current point to goal point
 
     Parameters
@@ -24,11 +33,12 @@ class Euclidean(Heuristic):
 
     """
 
-    def __init__(self, scale: Tuple):
-        if scale is None:
-            raise TypeError
-        if len(scale) == 0:
-            raise ValueError
+    def __init__(self, scale):
+        # def __init__(self, scale: Tuple):
+        # if scale is None:
+        #     raise TypeError
+        # if len(scale) == 0:
+        #     raise ValueError
 
         self.scale_x = scale[0]
         self.scale_y = scale[1]
@@ -36,7 +46,8 @@ class Euclidean(Heuristic):
         if len(scale) == 3:
             self.scale_z = scale[2]
 
-    def estimate_cost_to_goal(self, current_point: np.ndarray, goal_point: np.ndarray) -> float:
+    def estimate_cost_to_goal(self, current_point, goal_point):
+        # def estimate_cost_to_goal(self, current_point: np.ndarray, goal_point: np.ndarray) -> float:
         """calculates the estimated cost from current point to the goal
     
         Parameters
@@ -63,10 +74,10 @@ class Euclidean(Heuristic):
         - for 2D points, the order of coordinates is: (y, x)
         - for 3D points, the order of coordinates is: (z, x, y)
         """
-        if current_point is None or goal_point is None:
-            raise TypeError
-        if (len(current_point) == 0 or len(goal_point) == 0) or (len(current_point) != len(goal_point)):
-            raise ValueError
+        # if current_point is None or goal_point is None:
+        #     raise TypeError
+        # if (len(current_point) == 0 or len(goal_point) == 0) or (len(current_point) != len(goal_point)):
+        #     raise ValueError
 
         # current_x, current_y, current_z = current_point[0], current_point[1], 0
         current_x, current_y, current_z = current_point[1], current_point[0], 0

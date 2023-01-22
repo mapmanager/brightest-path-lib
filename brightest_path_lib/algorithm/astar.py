@@ -1,5 +1,6 @@
 from collections import defaultdict
 import math
+from numba import njit
 import numpy as np
 from queue import PriorityQueue, Queue
 from typing import List, Tuple
@@ -226,6 +227,7 @@ class AStarSearch:
         else:
             return self._find_3D_neighbors_of(node)
     
+    @njit
     def _find_2D_neighbors_of(self, node: Node) -> List[Node]:
         """Finds the neighbors of a 2D node
 
@@ -289,6 +291,7 @@ class AStarSearch:
 
         return neighbors
 
+    @njit
     def _find_3D_neighbors_of(self, node: Node) -> List[Node]:
         """Finds the neighbors of a 3D node
 
@@ -391,7 +394,7 @@ class AStarSearch:
             returns the heuristic cost between the point and goal point
         """
         return self.cost_function.minimum_step_cost() * self.heuristic_function.estimate_cost_to_goal(
-            current_point=point, goal_point=self.goal_point
+            point, self.goal_point
         )
 
     def _construct_path_from(self, node: Node):

@@ -33,7 +33,6 @@ class Reciprocal(Cost):
         self.RECIPROCAL_MIN = 1E-6
         self.RECIPROCAL_MAX = 255.0
         self._min_step_cost = 1 / self.RECIPROCAL_MAX
-        
 
     def cost_of_moving_to(self, intensity_at_new_point: float) -> float:
         """calculates the cost of moving to a point

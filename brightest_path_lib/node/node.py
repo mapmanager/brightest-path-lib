@@ -1,5 +1,15 @@
 import numpy as np
+import numba as nb
+from numba.experimental import jitclass
 
+specs_node = {}
+specs_node['point'] = nb.types.Array(nb.int32, 1, "A")
+specs_node['g_score'] = nb.float32
+specs_node['h_score'] = nb.float32
+specs_node['f_score'] = nb.float32
+# specs_node['predecessor'] = 
+
+@jitclass(specs_node)
 class Node:
     """Class holding information about a node
 
