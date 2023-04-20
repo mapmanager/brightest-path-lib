@@ -1,0 +1,1188 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../quickstart_guide/">
+      
+      
+        <link rel="next" href="../simple_notebook/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
+    
+    
+      
+        <title>API Documentation - Brightest Path Library</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.558e4712.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Brightest Path Library" class="md-header__button md-logo" aria-label="Brightest Path Library" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Brightest Path Library
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API Documentation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Brightest Path Library" class="md-nav__button md-logo" aria-label="Brightest Path Library" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Brightest Path Library
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" tabindex="0" aria-expanded="false">
+          Getting Started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart_guide/" class="md-nav__link">
+        Quick Start Guide
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          API Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        API Documentation
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#search-algorithms" class="md-nav__link">
+    Search Algorithms
+  </a>
+  
+    <nav class="md-nav" aria-label="Search Algorithms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-astarsearch" class="md-nav__link">
+    1. AStarSearch
+  </a>
+  
+    <nav class="md-nav" aria-label="1. AStarSearch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exceptions" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-nbastarsearch" class="md-nav__link">
+    2. NBAStarSearch
+  </a>
+  
+    <nav class="md-nav" aria-label="2. NBAStarSearch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters_1" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attributes_1" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exceptions_1" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-function" class="md-nav__link">
+    Cost Function
+  </a>
+  
+    <nav class="md-nav" aria-label="Cost Function">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-reciprocal" class="md-nav__link">
+    1. Reciprocal
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Reciprocal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters_2" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_2" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exceptions_2" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#heuristic-function" class="md-nav__link">
+    Heuristic Function
+  </a>
+  
+    <nav class="md-nav" aria-label="Heuristic Function">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-euclidean" class="md-nav__link">
+    1. Euclidean
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Euclidean">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters_3" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_3" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exceptions_3" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" tabindex="0" aria-expanded="false">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../simple_notebook/" class="md-nav__link">
+        Basic Demo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../threading_notebook/" class="md-nav__link">
+        Visualizing the search in real-time
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#search-algorithms" class="md-nav__link">
+    Search Algorithms
+  </a>
+  
+    <nav class="md-nav" aria-label="Search Algorithms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-astarsearch" class="md-nav__link">
+    1. AStarSearch
+  </a>
+  
+    <nav class="md-nav" aria-label="1. AStarSearch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exceptions" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-nbastarsearch" class="md-nav__link">
+    2. NBAStarSearch
+  </a>
+  
+    <nav class="md-nav" aria-label="2. NBAStarSearch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters_1" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attributes_1" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exceptions_1" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-function" class="md-nav__link">
+    Cost Function
+  </a>
+  
+    <nav class="md-nav" aria-label="Cost Function">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-reciprocal" class="md-nav__link">
+    1. Reciprocal
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Reciprocal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters_2" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_2" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exceptions_2" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#heuristic-function" class="md-nav__link">
+    Heuristic Function
+  </a>
+  
+    <nav class="md-nav" aria-label="Heuristic Function">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-euclidean" class="md-nav__link">
+    1. Euclidean
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Euclidean">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters_3" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_3" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exceptions_3" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="api-documentation">API Documentation</h1>
+<p>This document provides detailed information about the public API of the <code>brightest-path</code> library.</p>
+<h2 id="search-algorithms">Search Algorithms</h2>
+<h3 id="1-astarsearch">1. <code>AStarSearch</code></h3>
+<p>This class implements the A* search algorithm to find the brightest path between two points in a 2D or 3D image.</p>
+<h4 id="parameters">Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+<th>Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image</code></td>
+<td><code>numpy.ndarray</code></td>
+<td>The 2D/3D image on which you will run an A* search.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>start_point</code></td>
+<td><code>numpy.ndarray</code></td>
+<td>The 2D/3D coordinates of the start point;  For 2D images, the coordinates are of the form (y, x) For 3D images, the coordinates are of the form (z, x, y)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>goal_point</code></td>
+<td><code>numpy.ndarray</code></td>
+<td>The 2D/3D coordinates of the goal point; For 2D images, the coordinates are of the form (y, x) For 3D images, the coordinates are of the form (z, x, y)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>scale</code></td>
+<td><code>Tuple</code></td>
+<td>The scale of the image; defaults to  <code>(1.0, 1.0)</code>, i.e, image is not zoomed in/out For 2D images, the scale is of the form (x, y) For 3D images, the scale is of the form (x, y, z)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>cost_function</code></td>
+<td><code>Enum</code></td>
+<td>The cost function to be used for computing the cost of moving to a new point Default type is <code>CostFunction.RECIPROCAL</code> to use the reciprocal function</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>heuristic_function</code></td>
+<td><code>Enum</code></td>
+<td>The heuristic function to be used to compute the estimated cost of moving from a  point to the goal; Default type is <code>HeuristicFunction.EUCLIDEAN</code> to use the euclidean function for cost estimation</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>open_nodes</code></td>
+<td><code>Queue</code></td>
+<td>contains a list of points that are in the open set, being examined for the brightest path;  can be used by the calling application to show a visualization of where the algorithm is searching currently; Default value is <code>None</code></td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>Note: All the parameters except <code>image</code>, <code>start_point</code>, and <code>goal_point</code> are optional.</p>
+<h4 id="attributes">Attributes</h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_canceled</code></td>
+<td><code>Bool</code></td>
+<td>should be set to <code>True</code> if the search needs to be stopped; <code>False</code> by default</td>
+</tr>
+<tr>
+<td><code>open_nodes</code></td>
+<td><code>Queue</code></td>
+<td>contains a list of points that are in the open set, being examined for the brightest path;  can be used by the calling application to show a visualization of where the algorithm is searching currently</td>
+</tr>
+<tr>
+<td><code>result</code></td>
+<td><code>List[numpy ndarray]</code></td>
+<td>the result of the A* search containing the list of points that constitute the brightest path  between the given start and goal points</td>
+</tr>
+</tbody>
+</table>
+<h4 id="methods">Methods</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>search</code></td>
+<td>Runs the A* search algorithm to find the brightest path from  <code>start_point</code> to <code>goal_point</code></td>
+<td><code>List[numpy.ndarray]</code>; the list containing the 2D/3D point coordinates that constitute the brightest path</td>
+</tr>
+</tbody>
+</table>
+<p>Note: Find the code for this class <a href="https://github.com/mapmanager/brightest-path-lib/blob/main/brightest_path_lib/algorithm/astar.py">here</a>.</p>
+<h4 id="exceptions">Exceptions</h4>
+<table>
+<thead>
+<tr>
+<th>Exception</th>
+<th>When is it thrown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TypeError</code></td>
+<td>If the <code>image</code> passed is <code>None</code> or <code>start_point</code> is None or <code>goal_point</code> is None</td>
+</tr>
+<tr>
+<td><code>ValueError</code></td>
+<td>If the length of the <code>image</code>, <code>start_point</code> or <code>goal_point</code> is <code>0</code></td>
+</tr>
+</tbody>
+</table>
+<p>We recommend you to catch the exceptions thrown by the library and handle them appropriately.</p>
+<h3 id="2-nbastarsearch">2. <code>NBAStarSearch</code></h3>
+<p>This class implements the NBA* search algorithm to find the brightest path between two points in a 2D or 3D image.</p>
+<h4 id="parameters_1">Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+<th>Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image</code></td>
+<td><code>numpy ndarray</code></td>
+<td>The 2D/3D image on which you will run an A* search.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>start_point</code></td>
+<td><code>numpy ndarray</code></td>
+<td>The 2D/3D coordinates of the start point;  For 2D images, the coordinates are of the form (y, x) For 3D images, the coordinates are of the form (z, x, y)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>goal_point</code></td>
+<td><code>numpy ndarray</code></td>
+<td>The 2D/3D coordinates of the goal point; For 2D images, the coordinates are of the form (y, x) For 3D images, the coordinates are of the form (z, x, y)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>scale</code></td>
+<td><code>Tuple</code></td>
+<td>The scale of the image; defaults to  <code>(1.0, 1.0)</code>, i.e, image is not zoomed in/out For 2D images, the scale is of the form (x, y) For 3D images, the scale is of the form (x, y, z)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>cost_function</code></td>
+<td><code>Enum</code></td>
+<td>The cost function to be used for computing the cost of moving to a new point Default type is <code>CostFunction.RECIPROCAL</code> to use the reciprocal function</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>heuristic_function</code></td>
+<td><code>Enum</code></td>
+<td>The heuristic function to be used to compute the estimated cost of moving from a  point to the goal; Default type is <code>HeuristicFunction.EUCLIDEAN</code> to use the euclidean function for cost estimation</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>open_nodes</code></td>
+<td><code>Queue</code></td>
+<td>contains a list of points that are in the open set, being examined for the brightest path;  can be used by the calling application to show a visualization of where the algorithm is searching currently; Default value is <code>None</code></td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>Note: All the parameters except <code>image</code>, <code>start_point</code>, and <code>goal_point</code> are optional.</p>
+<h4 id="attributes_1">Attributes</h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_canceled</code></td>
+<td><code>Bool</code></td>
+<td>should be set to <code>True</code> if the search needs to be stopped; <code>False</code> by default</td>
+</tr>
+<tr>
+<td><code>open_nodes</code></td>
+<td><code>Queue</code></td>
+<td>contains a list of points that are in the open set, being examined for the brightest path;  can be used by the calling application to show a visualization of where the algorithm is searching currently</td>
+</tr>
+<tr>
+<td><code>result</code></td>
+<td><code>List[numpy ndarray]</code></td>
+<td>the result of the A* search containing the list of points that constitute the brightest path  between the given start and goal points</td>
+</tr>
+</tbody>
+</table>
+<h4 id="methods_1">Methods</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>search</code></td>
+<td>Runs the A* search algorithm to find the brightest path from  <code>start_point</code> to <code>goal_point</code></td>
+<td><code>List[numpy.ndarray]</code>; the list containing the 2D/3D point coordinates that constitute the brightest path</td>
+</tr>
+</tbody>
+</table>
+<p>Note: Find the code for this class <a href="https://github.com/mapmanager/brightest-path-lib/blob/main/brightest_path_lib/algorithm/nbastar.py">here</a>.</p>
+<h4 id="exceptions_1">Exceptions</h4>
+<table>
+<thead>
+<tr>
+<th>Exception</th>
+<th>When is it thrown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TypeError</code></td>
+<td>If the <code>image</code> passed is <code>None</code> or <code>start_point</code> is None or <code>goal_point</code> is None</td>
+</tr>
+<tr>
+<td><code>ValueError</code></td>
+<td>If the length of the <code>image</code>, <code>start_point</code> or <code>goal_point</code> is <code>0</code></td>
+</tr>
+</tbody>
+</table>
+<p>We recommend you to catch the exceptions thrown by the library and handle them appropriately.</p>
+<h2 id="cost-function">Cost Function</h2>
+<h3 id="1-reciprocal">1. <code>Reciprocal</code></h3>
+<p>This class implements the <code>reciprocal cost function</code> as the cost to calculate the cost of moving to a point.</p>
+<p>The reciprocal function is commonly used as a cost function in pathfinding algorithms. It is calculated as the reciprocal of the intensity of a pixel/voxel at a given location in the image volume.</p>
+<p>The intuition behind using the reciprocal function is that we want to give a higher cost to moving to points with lower intensity, as these areas may be less informative or less relevant to the overall goal of the pathfinding task. On the other hand, areas with higher intensity are likely to contain important information and should be favored in the search for the brightest path. Therefore, by taking the reciprocal of the intensity values, we are essentially inverting the cost, so that higher intensity areas have a lower cost, and vice versa. This makes it more likely that the pathfinding algorithm will favor paths that traverse brighter areas of the image volume.</p>
+<h4 id="parameters_2">Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Paramater</th>
+<th>Type</th>
+<th>Description</th>
+<th>Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>min_intensity</code></td>
+<td><code>float</code></td>
+<td>The minimum intensity a pixel/voxel can have in a given image</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>max_intensity</code></td>
+<td><code>float</code></td>
+<td>The maximum intensity a pixel/voxel can have in a given image</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h4 id="methods_2">Methods</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cost_of_moving_to(intensity_at_new_point: float)</code></td>
+<td>calculates the cost of moving to a point</td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td><code>minimum_step_cost()</code></td>
+<td>calculates the minimum step cost</td>
+<td><code>float</code></td>
+</tr>
+</tbody>
+</table>
+<p>Find its code <a href="https://github.com/mapmanager/brightest-path-lib/blob/main/brightest_path_lib/cost/reciprocal.py">here</a>.</p>
+<h4 id="exceptions_2">Exceptions</h4>
+<table>
+<thead>
+<tr>
+<th>Exception</th>
+<th>When is it thrown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TypeError</code></td>
+<td>If the <code>min_intensity</code> or <code>max_intensity</code> is <code>None</code></td>
+</tr>
+<tr>
+<td><code>ValueError</code></td>
+<td>If <code>min_intensity &gt; max_intensity</code></td>
+</tr>
+</tbody>
+</table>
+<p>We recommend you to catch the exceptions thrown by the library and handle them appropriately.</p>
+<h2 id="heuristic-function">Heuristic Function</h2>
+<h3 id="1-euclidean">1. <code>Euclidean</code></h3>
+<p>A heuristic function is used to estimate the cost of moving from a given point to the goal point. The Euclidean distance is a measure of the straight-line distance between two points in a Euclidean space, such as the 2D or 3D space of an image.</p>
+<p>Using the Euclidean distance as a heuristic function is effective because it provides an admissible and consistent estimate of the actual cost of moving from a given point to the goal point. An admissible heuristic is one that never overestimates the cost of reaching the goal, and a consistent heuristic is one that satisfies the triangle inequality, i.e., the estimated cost of moving from one point to another is always less than or equal to the sum of the estimated cost of moving from the first point to the goal plus the estimated cost of moving from the second point to the goal. By using a consistent heuristic, we can ensure that the pathfinding algorithm will always find the optimal path from the start point to the goal point.</p>
+<h4 id="parameters_3">Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+<th>Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scale</code></td>
+<td><code>Tuple</code></td>
+<td>the scale of the image's axes. For example (1.0 1.0) for a 2D image. - for 2D points, the order of scale is: (x, y) - for 3D points, the order of scale is: (x, y, z)</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h4 id="methods_3">Methods</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Return Type</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>estimate_cost_to_goal(current_point: numpy.ndarray, goal_point: numpy.ndarray)</code></td>
+<td>calculates the cost of moving to a point</td>
+<td><code>float</code></td>
+<td>If the image is zoomed in or out, then the scale of one of more axes  will be more or less than 1.0. For example, if the image is zoomed in to twice its size then the scale of X and Y axes will be 2.0. <br>         By including the scale in the calculation of distance to the goal we can get an accurate cost. <br> - for 2D points, the order of coordinates is: (y, x) - for 3D points, the order of coordinates is: (z, x, y)</td>
+</tr>
+</tbody>
+</table>
+<p>Find its code <a href="https://github.com/mapmanager/brightest-path-lib/blob/main/brightest_path_lib/heuristic/euclidean.py">here</a>.</p>
+<h4 id="exceptions_3">Exceptions</h4>
+<table>
+<thead>
+<tr>
+<th>Exception</th>
+<th>When is it thrown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TypeError</code></td>
+<td>If the <code>current_point</code> or <code>goal_point</code> is <code>None</code></td>
+</tr>
+<tr>
+<td><code>ValueError</code></td>
+<td>If the length of <code>current_point</code> or <code>goal_point</code> is <code>0</code></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51d95adb.min.js"></script>
+      
+    
+  </body>
+</html>
