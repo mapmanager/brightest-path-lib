@@ -16,7 +16,7 @@
         <link rel="prev" href="..">
       
       
-        <link rel="next" href="../quickstart_guide/">
+        <link rel="next" href="../simple_notebook/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -203,44 +203,6 @@
     
   
   
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-        
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Getting Started
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_2">
-            <span class="md-nav__icon md-icon"></span>
-            Getting Started
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-    
-  
-  
     <li class="md-nav__item md-nav__item--active">
       
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
@@ -313,53 +275,6 @@
     </li>
   
 
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../quickstart_guide/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Quick Start Guide
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api_docs/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    API Documentation
-  </span>
-  
-
-      </a>
-    </li>
-  
-
     
       
       
@@ -376,24 +291,24 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Tutorials
+    Getting Started
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Tutorials
+            Getting Started
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -440,6 +355,25 @@
           </ul>
         </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -526,12 +460,13 @@
 
 
 <h1 id="installation">Installation</h1>
-<p>To use the library, you'll need to have at least Python 3.7 installed on your system. Once you've verified that you have Python installed, you can follow these steps to install the library:</p>
+<p>To use the library, you'll need to have at least Python 3.7 installed on your computer. Once you've verified that you have Python installed, you can follow these steps to install the library:</p>
 <h2 id="1-install-the-library-using-pip">1. Install the library using pip</h2>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>brightest-path-lib
 </span></code></pre></div>
 <p>or</p>
 <h2 id="2-install-from-source">2. Install from source</h2>
+<p>This is assuming you have <code>git</code> installed!</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mapmanager/brightest-path-lib.git
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>brightest-path-lib
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
@@ -539,6 +474,9 @@
 <h2 id="verify-installation">Verify installation</h2>
 <p>Once you've installed the library, you can import it into your Python code using the following command:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span> <span class="nn">brightest_path_lib</span>
+</span></code></pre></div>
+<p>And then check the version:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">brightest_path_lib</span><span class="o">.</span><span class="n">__version__</span>
 </span></code></pre></div>
 
 
