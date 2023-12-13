@@ -205,7 +205,6 @@ class AStarSearch:
             open_set_hash.remove(current_coordinates)
 
             if self._found_goal(current_node.point):
-                print("Found goal!")
                 self._construct_path_from(current_node)
                 self.found_path = True
                 break
