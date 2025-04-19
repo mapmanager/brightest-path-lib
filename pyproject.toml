@@ -1,22 +1,52 @@
 [build-system]
-# as this 20240527, removing transonic
-#requires = ["setuptools", "wheel", "numpy"]
-requires = ["setuptools", "wheel", "numpy", "transonic"]
-#requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2", "wheel", "numpy", "transonic"]
+requires = [
+    "setuptools>=45",
+    "setuptools_scm",
+    "wheel",
+    "transonic",
+    "pythran",
+    "numpy"
+]
 build-backend = "setuptools.build_meta"
 
-#[project]
-#name = "brightest_path_lib"
-#dynamic = ['version']
+[project]
+name = "brightest-path-lib"
+version = "1.0.57"
+description = "A library of path-finding algorithms to find the brightest path between points in an image."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "GNU General Public License, Version 3" }
+authors = [
+    { name = "Vasudha Jha" }
+]
+dependencies = [
+    "numpy",
+    "transonic"
+]
 
-#[tool.setuptools_scm]
-#write_to = "brightest_path_lib/_version.py"
-#version_scheme = "post-release"
-#version_scheme = "release-branch-semver"
-#local_scheme = "dirty-tag"
-#local_scheme = "no-local-version"
+[project.optional-dependencies]
+dev = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-jupyter",
+    "mkdocstrings",
+    "mkdocs-material-extensions"
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "scikit-image",
+    "pooch"
+]
 
-#[tool.setuptools.dynamic]
-#version = { attr = 'mlsgrid_api.version' }
-#version = { attr = "setuptools_scm.get_version" }
-#version = { attr = 'brightest_path_lib.__version__' }
+[project.urls]
+Homepage = "https://github.com/mapmanager/brightest-path-lib"
+Issues = "https://github.com/mapmanager/brightest-path-lib/issues"
+CI = "https://github.com/mapmanager/brightest-path-lib/actions"
+Changelog = "https://github.com/mapmanager/brightest-path-lib/releases"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["tests"]
