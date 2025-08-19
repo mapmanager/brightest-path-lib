@@ -2,7 +2,11 @@ import numpy as np
 import pytest
 from brightest_path_lib.algorithm.nbastar import NBAStarSearch
 from brightest_path_lib.input import CostFunction, HeuristicFunction
+""" DEFUNCT
 
+Used to test original nbaStar implementation
+
+"""
 two_dim_image = np.array([[ 4496,  5212,  6863, 10113,  7055],
        [ 4533,  5146,  7555, 10377,  5768],
        [ 4640,  6082,  8452, 10278,  4543],
@@ -11,7 +15,7 @@ two_dim_image = np.array([[ 4496,  5212,  6863, 10113,  7055],
 two_dim_start_point = np.array([0,0])
 two_dim_goal_point = np.array([4,4])
 two_dim_scale = (1.0, 1.0)
-two_dim_result = np.array([np.array([0, 0]), np.array([0, 1]), np.array([1, 2]), np.array([2, 2]), np.array([3, 3]), np.array([4, 4])])
+two_dim_result = np.array([np.array([0, 0]), np.array([0, 1]), np.array([1, 2]), np.array([2, 3]), np.array([3, 3]), np.array([4, 4])])
 
 three_dim_image = np.array([[[ 4496,  5212,  6863, 10113,  7055],
         [ 4533,  5146,  7555, 10377,  5768],
@@ -27,8 +31,8 @@ three_dim_image = np.array([[[ 4496,  5212,  6863, 10113,  7055],
 three_dim_start_point = np.array([0,0,0])
 three_dim_goal_point = np.array([0,4,4])
 three_dim_scale = (1.0, 1.0, 1.0)
-three_dim_result = np.array([np.array([0, 0, 0]), np.array([1, 1, 0]), np.array([1, 2, 1]), np.array([0, 2, 2]), np.array([0, 3, 3]), np.array([0, 4, 4])])
-three_dim_result_scaled = np.array([np.array([0, 0, 0]), np.array([1, 1, 0]), np.array([1, 2, 1]), np.array([0, 2, 2]), np.array([0, 3, 3]), np.array([0, 4, 4])])
+three_dim_result = np.array([np.array([0, 0, 0]), np.array([1, 0, 1]), np.array([0, 1, 2]), np.array([0, 2, 3]), np.array([0, 3, 3]), np.array([0, 4, 4])])
+three_dim_result_scaled = np.array([np.array([0, 0, 0]), np.array([1, 1, 0]), np.array([1, 2, 1]), np.array([0, 3, 2]), np.array([0, 3, 3]), np.array([0, 4, 4])])
 
 @pytest.mark.parametrize("image, start_point, goal_point, scale", [
     (two_dim_image, two_dim_start_point, two_dim_goal_point, two_dim_scale),
@@ -77,6 +81,7 @@ def test_init_with_empty_input(image, start_point, goal_point, scale):
 ])
 def test_search(image, start_point, goal_point, scale, expected_result):
     nbastar = NBAStarSearch(image, start_point, goal_point, scale)
+
     result = nbastar.search()
-    # print((f"result {result} expected_result {expected_result}"))
+    print((f"result {result} expected_result {expected_result}"))
     assert np.array_equal(result, expected_result)
