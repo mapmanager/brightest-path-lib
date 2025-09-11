@@ -1,18 +1,18 @@
 import numpy as np
-import numba as nb
+from brightest_path_lib.checkNumba import njit
 
 # Numba-optimized helper functions
-@nb.njit(fastmath=True)
+@njit(fastmath=True)
 def compute_f_score(g_score: float, h_score: float) -> float:
     """Compute f_score from g_score and h_score with Numba optimization"""
     return g_score + h_score
 
-@nb.njit
+@njit
 def validate_point(point):
     """Validate point array with Numba optimization"""
     return len(point) > 0
 
-@nb.njit
+@njit
 def get_score_by_direction(from_start, start_score, goal_score):
     """Get the appropriate score based on direction with Numba optimization"""
     if from_start:

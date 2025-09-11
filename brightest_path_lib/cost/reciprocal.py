@@ -1,10 +1,10 @@
-from numba import njit, float64
 from brightest_path_lib.cost import Cost
+from brightest_path_lib.checkNumba import njit
 
 # Standalone Numba-optimized function for the cost calculation
 @njit(fastmath=True)
 def _calculate_cost(intensity_at_new_point, min_intensity, max_intensity, 
-                   reciprocal_min, reciprocal_max):
+                reciprocal_min, reciprocal_max):
     """Numba-optimized cost calculation function"""
     # Normalize intensity
     intensity_at_new_point = reciprocal_max * (intensity_at_new_point - min_intensity) / (max_intensity - min_intensity)
@@ -38,6 +38,7 @@ class Reciprocal(Cost):
 
     def __init__(self, min_intensity: float, max_intensity: float) -> None:
         super().__init__()
+        print(f"inside reciprocal init")
         if min_intensity is None or max_intensity is None:
             raise TypeError
         if min_intensity > max_intensity:

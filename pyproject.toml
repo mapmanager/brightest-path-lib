@@ -17,8 +17,7 @@ authors = [
     { name = "Vasudha Jha" }
 ]
 dependencies = [
-    "numpy",
-    "numba"
+    "numpy"
 ]
 
 [project.optional-dependencies]
@@ -28,6 +27,9 @@ dev = [
     "mkdocs-jupyter",
     "mkdocstrings",
     "mkdocs-material-extensions"
+]
+numba = [
+    "numba"
 ]
 test = [
     "pytest",

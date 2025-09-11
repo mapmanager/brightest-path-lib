@@ -1,67 +1,95 @@
 import numpy as np
-import numba as nb
 
-# Numba-optimized functions for faster image stats calculation
-@nb.njit(fastmath=True)
-def compute_image_intensity_range(image):
-    """Efficiently compute min and max intensity of an image using Numba"""
-    # Use Numba's optimized implementation rather than np.min/np.max
-    # for better performance, especially with large arrays
+# Try to import numba for optimization, fall back to regular functions
+try:
+    import numba as nb
     
-    # Initialize with extreme values
-    min_val = np.inf
-    max_val = -np.inf
-    
-    # For 1D arrays (unlikely but handled for completeness)
-    if image.ndim == 1:
-        for i in range(image.shape[0]):
-            val = image[i]
-            if val < min_val:
-                min_val = val
-            if val > max_val:
-                max_val = val
-    
-    # For 2D arrays (most common case)
-    elif image.ndim == 2:
-        for i in range(image.shape[0]):
-            for j in range(image.shape[1]):
-                val = image[i, j]
+    # Numba-optimized functions for faster image stats calculation
+    @nb.njit(fastmath=True)
+    def compute_image_intensity_range(image):
+        """Efficiently compute min and max intensity of an image using Numba"""
+        # Use Numba's optimized implementation rather than np.min/np.max
+        # for better performance, especially with large arrays
+        
+        # Initialize with extreme values
+        min_val = np.inf
+        max_val = -np.inf
+        
+        # For 1D arrays (unlikely but handled for completeness)
+        if image.ndim == 1:
+            for i in range(image.shape[0]):
+                val = image[i]
                 if val < min_val:
                     min_val = val
                 if val > max_val:
                     max_val = val
-    
-    # For 3D arrays
-    elif image.ndim == 3:
-        for i in range(image.shape[0]):
-            for j in range(image.shape[1]):
-                for k in range(image.shape[2]):
-                    val = image[i, j, k]
+        
+        # For 2D arrays (most common case)
+        elif image.ndim == 2:
+            for i in range(image.shape[0]):
+                for j in range(image.shape[1]):
+                    val = image[i, j]
                     if val < min_val:
                         min_val = val
                     if val > max_val:
                         max_val = val
-    
-    return float(min_val), float(max_val)
+        
+        # For 3D arrays
+        elif image.ndim == 3:
+            for i in range(image.shape[0]):
+                for j in range(image.shape[1]):
+                    for k in range(image.shape[2]):
+                        val = image[i, j, k]
+                        if val < min_val:
+                            min_val = val
+                        if val > max_val:
+                            max_val = val
+        
+        return float(min_val), float(max_val)
 
-@nb.njit
-def compute_image_dimensions(image_shape):
-    """Compute image dimensions and coordinate ranges"""
-    ndim = len(image_shape)
+    @nb.njit
+    def compute_image_dimensions(image_shape):
+        """Compute image dimensions and coordinate ranges"""
+        ndim = len(image_shape)
+        
+        # Initialize with default values
+        x_min, y_min, z_min = 0, 0, 0
+        x_max, y_max, z_max = 0, 0, 0
+        
+        if ndim == 2:  # 2D image
+            y_max = image_shape[0] - 1
+            x_max = image_shape[1] - 1
+        elif ndim == 3:  # 3D image
+            z_max = image_shape[0] - 1
+            y_max = image_shape[1] - 1
+            x_max = image_shape[2] - 1
+        
+        return x_min, x_max, y_min, y_max, z_min, z_max
+
+except ImportError:
+    print(f"stats import error")
+    # Fallback functions without numba optimization
+    def compute_image_intensity_range(image):
+        """Efficiently compute min and max intensity of an image"""
+        return float(np.min(image)), float(np.max(image))
     
-    # Initialize with default values
-    x_min, y_min, z_min = 0, 0, 0
-    x_max, y_max, z_max = 0, 0, 0
-    
-    if ndim == 2:  # 2D image
-        y_max = image_shape[0] - 1
-        x_max = image_shape[1] - 1
-    elif ndim == 3:  # 3D image
-        z_max = image_shape[0] - 1
-        y_max = image_shape[1] - 1
-        x_max = image_shape[2] - 1
-    
-    return x_min, x_max, y_min, y_max, z_min, z_max
+    def compute_image_dimensions(image_shape):
+        """Compute image dimensions and coordinate ranges"""
+        ndim = len(image_shape)
+        
+        # Initialize with default values
+        x_min, y_min, z_min = 0, 0, 0
+        x_max, y_max, z_max = 0, 0, 0
+        
+        if ndim == 2:  # 2D image
+            y_max = image_shape[0] - 1
+            x_max = image_shape[1] - 1
+        elif ndim == 3:  # 3D image
+            z_max = image_shape[0] - 1
+            y_max = image_shape[1] - 1
+            x_max = image_shape[2] - 1
+        
+        return x_min, x_max, y_min, y_max, z_min, z_max
 
 class ImageStats:
     """Class holding metadata about an image, optimized with Numba

@@ -1,183 +1,151 @@
-""" New Bidirectional A* Search Algorithm (NBA*)
-Advanced optimized A* search implementation for finding the brightest path in an image.
-This version includes additional performance optimizations beyond the previous version.
+# algorithm/nbastar.py
 
-Developed by Github user: nipunarora8
+""" 
+
+The New Bidirectional A* Search Algorithm is an improvement over the
+original Bidirectional A* Search algorithm, which is a variation of the
+A* Search algorithm that searches from both the start and goal nodes 
+simultaneously in order to find the shortest path more efficiently.
+
+The New Bidirectional A* Search Algorithm was proposed to address a 
+limitation of the original Bidirectional A* Search algorithm, which is 
+that it often expands too many nodes and wastes computational resources. 
+The new algorithm works by using two heuristic functions, one for the 
+forward search and one for the backward search, and dynamically
+adjusting them during the search.
+
+The algorithm starts with two search trees, one rooted at the start node
+and one rooted at the goal node. The forward search tree expands nodes 
+in the direction of the goal node, and the backward search tree expands 
+nodes in the direction of the start node. The search terminates when the
+two trees meet in the middle, i.e., when they have a common node. 
+
+During the search, the heuristic functions are dynamically adjusted
+based on the cost of the path found so far. If the cost of the path
+found so far is greater than the estimated cost of the path from the 
+start node to the goal node, the heuristic function for the forward 
+search is increased, and if the cost is less than the estimated cost, 
+the heuristic function is decreased. The same adjustments are made 
+to the heuristic function for the backward search.
+
+This dynamic adjustment of the heuristic functions helps to reduce the
+number of nodes expanded during the search and improve the efficiency
+of the algorithm.
+
+To search for the brightest path between two points in an image:
+
+1. Initialize the NBAStarSearch class with the 2D/3D image,
+   start point and the goal point: `nbastar = NBAStarSearch(image, start_point, goal_point)`
+2. Call the search method: `path = nbastar.search()`
 """
 
-import heapq
+
+from collections import defaultdict
 import math
 import numpy as np
-from collections import defaultdict
-from typing import List, Tuple, Dict, Set, Any, Optional
-import numba as nb
-from numba import types, prange, jit
-
-# Import your original modules
+from queue import PriorityQueue, Queue
+from typing import List, Tuple, Dict
 from brightest_path_lib.cost import Reciprocal
 from brightest_path_lib.heuristic import Euclidean
 from brightest_path_lib.image import ImageStats
 from brightest_path_lib.input import CostFunction, HeuristicFunction
-from brightest_path_lib.node import Node
+from brightest_path_lib.node import Node, BidirectionalNode
 
-
-# Further optimized Numba helper functions
-@nb.njit(cache=True, inline='always')
-def array_equal(arr1, arr2):
-    """Numba-compatible implementation of np.array_equal with maximum optimization"""
-    if arr1.shape != arr2.shape:
-        return False
-    return np.all(arr1 == arr2)
-
-
-@nb.njit(fastmath=True, cache=True, inline='always')
-def euclidean_distance_scaled(current_point, goal_point, scale_x, scale_y, scale_z=1.0):
-    """Calculate scaled Euclidean distance between two points with maximum optimizations"""
-    if len(current_point) == 2:  # 2D case
-        x_diff = (goal_point[1] - current_point[1]) * scale_x
-        y_diff = (goal_point[0] - current_point[0]) * scale_y
-        return math.sqrt(x_diff * x_diff + y_diff * y_diff)
-    else:  # 3D case
-        x_diff = (goal_point[2] - current_point[2]) * scale_x
-        y_diff = (goal_point[1] - current_point[1]) * scale_y
-        z_diff = (goal_point[0] - current_point[0]) * scale_z
-        return math.sqrt(x_diff * x_diff + y_diff * y_diff + z_diff * z_diff)
-
-
-# Pre-calculate direction arrays for neighbor finding - improves cache efficiency
-directions_2d = np.array([
-    [-1, -1], [-1, 0], [-1, 1],
-    [0, -1],           [0, 1],
-    [1, -1],  [1, 0],  [1, 1]
-], dtype=np.int32)
-
-directions_3d = np.array([
-    [-1, -1, -1], [-1, -1, 0], [-1, -1, 1],
-    [-1, 0, -1],  [-1, 0, 0],  [-1, 0, 1],
-    [-1, 1, -1],  [-1, 1, 0],  [-1, 1, 1],
-    
-    [0, -1, -1],  [0, -1, 0],  [0, -1, 1],
-    [0, 0, -1],               [0, 0, 1],
-    [0, 1, -1],   [0, 1, 0],   [0, 1, 1],
-    
-    [1, -1, -1],  [1, -1, 0],  [1, -1, 1],
-    [1, 0, -1],   [1, 0, 0],   [1, 0, 1],
-    [1, 1, -1],   [1, 1, 0],   [1, 1, 1]
-], dtype=np.int32)
-
-# Pre-calculate distances for 2D neighbors
-distances_2d = np.array([
-    math.sqrt(2), 1.0, math.sqrt(2),
-    1.0,          1.0,
-    math.sqrt(2), 1.0, math.sqrt(2)
-], dtype=np.float32)
-
-# Pre-calculate distances for 3D neighbors
-distances_3d = np.array([
-    math.sqrt(3), math.sqrt(2), math.sqrt(3),
-    math.sqrt(2), 1.0,          math.sqrt(2),
-    math.sqrt(3), math.sqrt(2), math.sqrt(3),
-    
-    math.sqrt(2), 1.0,          math.sqrt(2),
-    1.0,                        1.0,
-    math.sqrt(2), 1.0,          math.sqrt(2),
-    
-    math.sqrt(3), math.sqrt(2), math.sqrt(3),
-    math.sqrt(2), 1.0,          math.sqrt(2),
-    math.sqrt(3), math.sqrt(2), math.sqrt(3)
-], dtype=np.float32)
-
-
-@nb.njit(cache=True, parallel=False)
-def find_2D_neighbors_optimized(node_point, g_score, image, x_min, x_max, y_min, y_max, 
-                              min_intensity, max_intensity, reciprocal_min, reciprocal_max, 
-                              min_step_cost, scale_x, scale_y, goal_point):
-    """Find 2D neighbors using pre-calculated directions and distances"""
-    neighbors = []
-    max_min_diff = max_intensity - min_intensity
-    
-    # Use vectorized approach for better cache performance
-    for i in range(len(directions_2d)):
-        dir_y, dir_x = directions_2d[i]
-        new_y = node_point[0] + dir_y
-        new_x = node_point[1] + dir_x
-        
-        # Boundary check
-        if new_x < x_min or new_x > x_max or new_y < y_min or new_y > y_max:
-            continue
-            
-        new_point = np.array([new_y, new_x], dtype=np.int32)
-        distance = distances_2d[i]
-        
-        # Calculate h_score
-        h_score = min_step_cost * euclidean_distance_scaled(
-            new_point, goal_point, scale_x, scale_y)
-        
-        # Calculate cost of moving (simplified calculation)
-        intensity = float(image[new_y, new_x])
-        norm_intensity = reciprocal_max * (intensity - min_intensity) / max_min_diff
-        norm_intensity = max(norm_intensity, reciprocal_min)
-        
-        cost = max(1.0 / norm_intensity, min_step_cost)
-        new_g_score = g_score + distance * cost
-        
-        neighbors.append((new_point, new_g_score, h_score))
-    
-    return neighbors
-
-
-@nb.njit(cache=True, parallel=False)
-def find_3D_neighbors_optimized(node_point, g_score, image, x_min, x_max, y_min, y_max, z_min, z_max,
-                              min_intensity, max_intensity, reciprocal_min, reciprocal_max, 
-                              min_step_cost, scale_x, scale_y, scale_z, goal_point):
-    """Find 3D neighbors using pre-calculated directions and distances"""
-    neighbors = []
-    max_min_diff = max_intensity - min_intensity
-    
-    # Use vectorized approach for better cache performance
-    for i in range(len(directions_3d)):
-        dir_z, dir_y, dir_x = directions_3d[i]
-        
-        # Skip center point
-        if dir_z == 0 and dir_y == 0 and dir_x == 0:
-            continue
-            
-        new_z = node_point[0] + dir_z
-        new_y = node_point[1] + dir_y
-        new_x = node_point[2] + dir_x
-        
-        # Boundary check
-        if (new_x < x_min or new_x > x_max or 
-            new_y < y_min or new_y > y_max or 
-            new_z < z_min or new_z > z_max):
-            continue
-            
-        new_point = np.array([new_z, new_y, new_x], dtype=np.int32)
-        distance = distances_3d[i]
-        
-        # Calculate h_score
-        h_score = min_step_cost * euclidean_distance_scaled(
-            new_point, goal_point, scale_x, scale_y, scale_z)
-        
-        # Calculate cost of moving (simplified calculation)
-        intensity = float(image[new_z, new_y, new_x])
-        norm_intensity = reciprocal_max * (intensity - min_intensity) / max_min_diff
-        norm_intensity = max(norm_intensity, reciprocal_min)
-        
-        cost = max(1.0 / norm_intensity, min_step_cost)
-        new_g_score = g_score + distance * cost
-        
-        neighbors.append((new_point, new_g_score, h_score))
-    
-    return neighbors
-
-
-# Optimized bidirectional A* search
 class NBAStarSearch:
-    """Advanced bidirectional A* search implementation
-    
-    This implementation searches from both start and goal simultaneously,
-    which can be much faster for large images.
+    """NBA* Implementation
+
+    Parameters
+    ----------
+    image : numpy ndarray
+        the 2D/3D image on which we will run an A star search
+    start_point : numpy ndarray
+        the 2D/3D coordinates of the starting point (could be a pixel or a voxel)
+        For 2D images, the coordinates are of the form (y, x)
+        For 2D images, the coordinates are of the form (z, x, y)
+    goal_point : numpy ndarray
+        the 2D/3D coordinates of the goal point (could be a pixel or a voxel)
+        For 2D images, the coordinates are of the form (y, x)
+        For 2D images, the coordinates are of the form (z, x, y)
+    scale : Tuple
+        the scale of the image; defaults to (1.0, 1.0), i.e. image is not zoomed in/out
+        For 2D images, the scale is of the form (x, y)
+        For 2D images, the scale is of the form (x, y, z)
+    cost_function : Enum CostFunction
+        this enum value specifies the cost function to be used for computing 
+        the cost of moving to a new point
+        Default type is CostFunction.RECIPROCAL to use the reciprocal function
+    heuristic_function : Enum HeuristicFunction
+        this enum value specifies the heuristic function to be used to compute
+        the estimated cost of moving from a point to the goal
+        Default type is HeuristicFunction.EUCLIDEAN to use the 
+        euclidean function for cost estimation
+    open_nodes : Queue
+        contains a list of points that are in the open set;
+        can be used by the calling application to show a visualization
+        of the algorithm's current search space
+        Default value is None
+
+    Attributes
+    ----------
+    image : numpy ndarray
+        the image on which the brightest path search will be run
+    start_point : numpy ndarray
+        the coordinates of the start point
+    goal_point : numpy ndarray
+        the coordinates of the goal point
+    scale : Tuple
+        the scale of the image; defaults to (1.0, 1.0), i.e. image is not zoomed in/out
+    cost_function : Cost
+        the cost function to be used for computing the cost of moving 
+        to a new point
+        Default type is Reciprocal
+    heuristic_function : Heuristic
+        the heuristic function to be used to compute the estimated
+        cost of moving from a point to the goal
+        Default type is Euclidean
+    open_nodes : Queue
+        contains a list of points that are in the open set;
+        can be used by the calling application to show a visualization
+        of the algorithm's current search space
+    node_priority_from_start : int
+        a number given to a node whenever its added to the open set
+        from start to goal; this is so that if we have to choose between
+        two nodes with the same f_score, we choose the one which was added
+        earlier to the open set, i.e, the one with lower priority 
+    node_priority_from_goal : int
+        a number given to a node whenever its added to the open set
+        from start to goal; this is so that if we have to choose between
+        two nodes with the same f_score, we choose the one which was added
+        earlier to the open set, i.e, the one with lower priority
+    open_set_from_start : PriorityQueue
+        a priority queue containing tuples of the form:
+        (f_score, node_priority_from_start, node);
+        the node is what we will evaulate to find the brightest path from
+        start to goal point 
+    open_set_from_goal : PriorityQueue
+        a priority queue containing tuples of the form:
+        (f_score, node_priority_from_goal, node);
+        the node is what we will evaulate to find the brightest path from
+        goal to start point
+    node_at_coordinates : Dict
+        a mapping of a 2D/3D point to its corresponding node
+    best_path_length : int
+        this attribute is used to reject nodes that are too far; 
+        initially initialized to infinity when the distance from start to goal
+        or goal to start is unknown, it keeps shrinking to reflect the shortening
+        of distance between our terminal points
+    touch_node : BidirectionalNode
+        the common node that is encountered when going from start to goal
+        and goal to start
+    is_canceled : bool
+        should be set to True if the search needs to be stopped;
+        false by default
+    evaluated_nodes : int
+        the number of nodes that have been evaluated to yet in search of the brightest path
+    result : List[numpy ndarray]
+        the result of the NBA* search containing the list of actual
+        points that constitute the brightest path from start_point to
+        goal_point    
     """
 
     def __init__(
@@ -188,42 +156,24 @@ class NBAStarSearch:
         scale: Tuple = (1.0, 1.0),
         cost_function: CostFunction = CostFunction.RECIPROCAL,
         heuristic_function: HeuristicFunction = HeuristicFunction.EUCLIDEAN,
-        open_nodes=None,
-        use_hierarchical: bool = False,
-        weight_heuristic: float = 1.0
+        open_nodes: Queue = None
     ):
-        """Initialize bidirectional A* search
-        
-        Parameters
-        ----------
-        image : numpy ndarray
-            The image to search
-        start_point, goal_point : numpy ndarray
-            Start and goal coordinates
-        scale : tuple
-            Image scale factors
-        cost_function, heuristic_function : Enum
-            Functions to use for cost and heuristic
-        open_nodes : Queue, optional
-            Queue for visualization
-        use_hierarchical : bool
-            Whether to use hierarchical search for large images
-        weight_heuristic : float
-            Weight for heuristic (> 1.0 makes search faster but less optimal)
-        """
+
         self._validate_inputs(image, start_point, goal_point)
 
-        # Convert to int32 for better performance
         self.image = image
         self.image_stats = ImageStats(image)
-        self.start_point = np.round(start_point).astype(np.int32)
-        self.goal_point = np.round(goal_point).astype(np.int32)
+        self.start_point = np.round(start_point).astype(int)
+        self.goal_point = np.round(goal_point).astype(int)
         self.scale = scale
         self.open_nodes = open_nodes
-        self.weight_heuristic = weight_heuristic
-        self.use_hierarchical = use_hierarchical
+        self.open_set_from_start = PriorityQueue()
+        self.open_set_from_goal = PriorityQueue()
+        self.node_priority_from_start, self.node_priority_from_goal = 0, 0
+        self.node_at_coordinates: Dict[Tuple, BidirectionalNode] = {}
+        # self.close_set_hash_from_start = set() # hashset contains tuple of node coordinates already been visited
+        # self.close_set_hash_from_goal = set()
 
-        # Configuration for reciprocal cost function
         if cost_function == CostFunction.RECIPROCAL:
             self.cost_function = Reciprocal(
                 min_intensity=self.image_stats.min_intensity, 
@@ -232,18 +182,12 @@ class NBAStarSearch:
         if heuristic_function == HeuristicFunction.EUCLIDEAN:
             self.heuristic_function = Euclidean(scale=self.scale)
         
-        # State variables
+        self.best_path_length = float("inf")
+        self.touch_node: BidirectionalNode = None
         self.is_canceled = False
         self.found_path = False
-        self.evaluated_nodes = 0
+        self.evaluated_nodes = 2 # since we will add the start and goal node to the open queue
         self.result = []
-
-        # For hierarchical search
-        if use_hierarchical and max(image.shape) > 1000:
-            # Downsampled image for initial path finding
-            self.downsampled_image = self._create_downsampled_image()
-        else:
-            self.downsampled_image = None
 
     def _validate_inputs(
         self,
@@ -251,42 +195,11 @@ class NBAStarSearch:
         start_point: np.ndarray,
         goal_point: np.ndarray,
     ):
-        """Validate input parameters"""
-        if image is None or start_point is None or goal_point is None:
-            raise TypeError("Image, start_point, and goal_point cannot be None")
-        if len(image) == 0 or len(start_point) == 0 or len(goal_point) == 0:
-            raise ValueError("Image, start_point, and goal_point cannot be empty")
 
-    def _create_downsampled_image(self, factor=4):
-        """Create a downsampled image for hierarchical search"""
-        if len(self.image.shape) == 2:  # 2D image
-            h, w = self.image.shape
-            new_h, new_w = h // factor, w // factor
-            downsampled = np.zeros((new_h, new_w), dtype=self.image.dtype)
-            
-            # Take maximum values to preserve bright paths
-            for i in range(new_h):
-                for j in range(new_w):
-                    y_start, y_end = i*factor, min((i+1)*factor, h)
-                    x_start, x_end = j*factor, min((j+1)*factor, w)
-                    downsampled[i, j] = np.max(self.image[y_start:y_end, x_start:x_end])
-                    
-            return downsampled
-        else:  # 3D image
-            d, h, w = self.image.shape
-            new_d, new_h, new_w = d // factor, h // factor, w // factor
-            downsampled = np.zeros((new_d, new_h, new_w), dtype=self.image.dtype)
-            
-            for i in range(new_d):
-                for j in range(new_h):
-                    for k in range(new_w):
-                        z_start, z_end = i*factor, min((i+1)*factor, d)
-                        y_start, y_end = j*factor, min((j+1)*factor, h)
-                        x_start, x_end = k*factor, min((k+1)*factor, w)
-                        downsampled[i, j, k] = np.max(self.image[z_start:z_end, 
-                                                             y_start:y_end, 
-                                                             x_start:x_end])
-            return downsampled
+        if image is None or start_point is None or goal_point is None:
+            raise TypeError
+        if len(image) == 0 or len(start_point) == 0 or len(goal_point) == 0:
+            raise ValueError
 
     @property
     def found_path(self) -> bool:
@@ -308,283 +221,362 @@ class NBAStarSearch:
             raise TypeError
         self._is_canceled = value
 
-    def search(self, verbose: bool = False) -> List[np.ndarray]:
-        """Perform bidirectional A* search
-        
-        This method searches from both the start and goal simultaneously,
-        which can dramatically reduce the search space.
-        
+    def search(self, verbose=False) -> List[np.ndarray]:
+        """Performs bidirectional brightest path search
+
         Returns
         -------
         List[np.ndarray]
-            Path from start to goal
+            the list containing the 2D/3D point coordinates
+            that constitute the brightest path between the
+            start_point and the goal_point
+        
         """
-        # If we're using hierarchical search for large images
-        if self.use_hierarchical and self.downsampled_image is not None:
-            if verbose:
-                print("Using hierarchical search...")
-            # First find path in downsampled image
-            rough_path = self._hierarchical_search()
-            if not rough_path:
-                # If hierarchical search failed, fall back to normal search
-                return self._bidirectional_search(verbose)
-            
-            # Refine path in original image
-            return self._refine_path(rough_path)
-        else:
-            # Regular bidirectional search
-            return self._bidirectional_search(verbose)
+        start_node = BidirectionalNode(point=self.start_point)
+        goal_node = BidirectionalNode(point=self.goal_point)
 
-    def _hierarchical_search(self):
-        """Perform search on downsampled image to get approximate path"""
-        # TODO: Implement hierarchical search for initial path estimate
-        # This would find a coarse path in the downsampled image
-        # The code could be similar to _bidirectional_search but using downsampled
-        # coordinates and image
-        return None  # For now, we'll just fall back to regular search
+        start_node.g_score_from_start = 0.0
+        goal_node.g_score_from_goal = 0.0
 
-    def _refine_path(self, rough_path):
-        """Refine a coarse path from hierarchical search"""
-        # TODO: Implement path refinement
-        # This would take the coarse path and refine it in the original image
-        return None  # For now we'll just return the rough path (downsample factor)
+        # since g_score from start to itself is 0, best f_score from start = h_score from start to goal
+        best_f_score_from_start = self._estimate_cost_to_goal(self.start_point, self.goal_point)
+        start_node.f_score_from_start = best_f_score_from_start
 
-    def _bidirectional_search(self, verbose: bool = False) -> List[np.ndarray]:
-        """Perform bidirectional A* search from start and goal simultaneously"""
-        # Forward search (start to goal)
-        open_heap_fwd = []
-        count_fwd = [0]  # Use a list for mutable reference
+        # since g_score from goal to itself is 0, best f_score from goal = h_score from goal to start
+        best_f_score_from_goal = self._estimate_cost_to_goal(self.goal_point, self.start_point)
+        goal_node.f_score_from_goal = best_f_score_from_goal
+
+        self.open_set_from_start.put((0, self.node_priority_from_start, start_node)) # f_score, count: priority of occurence, current node
+        self.open_set_from_goal.put((0, self.node_priority_from_goal, goal_node)) # f_score, count: priority of occurence, current node
+
+        self.node_at_coordinates[tuple(self.start_point)] = start_node
+        self.node_at_coordinates[tuple(self.goal_point)] = goal_node
         
-        start_node = Node(
-            point=self.start_point, 
-            g_score=0, 
-            h_score=self._estimate_cost_to_goal(self.start_point, self.goal_point), 
-            predecessor=None
-        )
-        
-        heapq.heappush(open_heap_fwd, (start_node.f_score, count_fwd[0], start_node))
-        open_nodes_dict_fwd = {tuple(self.start_point): (0, start_node.f_score, start_node)}
-        closed_set_fwd = set()
-        
-        # Backward search (goal to start)
-        open_heap_bwd = []
-        count_bwd = [0]  # Use a list for mutable reference
-        
-        goal_node = Node(
-            point=self.goal_point, 
-            g_score=0, 
-            h_score=self._estimate_cost_to_goal(self.goal_point, self.start_point), 
-            predecessor=None
-        )
-        
-        heapq.heappush(open_heap_bwd, (goal_node.f_score, count_bwd[0], goal_node))
-        open_nodes_dict_bwd = {tuple(self.goal_point): (0, goal_node.f_score, goal_node)}
-        closed_set_bwd = set()
-        
-        # Extract parameters for neighbor finding
-        scale_x, scale_y = self.scale[0], self.scale[1]
-        scale_z = 1.0 if len(self.scale) <= 2 else self.scale[2]
-        
-        min_intensity = self.image_stats.min_intensity
-        max_intensity = self.image_stats.max_intensity
-        x_min, x_max = self.image_stats.x_min, self.image_stats.x_max
-        y_min, y_max = self.image_stats.y_min, self.image_stats.y_max
-        z_min, z_max = self.image_stats.z_min, self.image_stats.z_max
-        
-        reciprocal_min = self.cost_function.RECIPROCAL_MIN
-        reciprocal_max = self.cost_function.RECIPROCAL_MAX
-        min_step_cost = self.cost_function.minimum_step_cost()
-        
-        # Best meeting point found so far
-        best_meeting_point = None
-        best_meeting_cost = float('inf')
-        best_fwd_node = None
-        best_bwd_node = None
-        
-        # Main bidirectional search loop
-        while open_heap_fwd and open_heap_bwd and not self.is_canceled:
-            # Decide which direction to expand
-            # Alternate between forward and backward search
-            if len(open_heap_fwd) <= len(open_heap_bwd):
-                # Expand forward search
-                success = self._expand_search(
-                    open_heap_fwd, open_nodes_dict_fwd, closed_set_fwd,
-                    open_nodes_dict_bwd, closed_set_bwd,
-                    True, count_fwd,
-                    x_min, x_max, y_min, y_max, z_min, z_max,
-                    min_intensity, max_intensity, reciprocal_min, reciprocal_max,
-                    min_step_cost, scale_x, scale_y, scale_z,
-                    best_meeting_point, best_meeting_cost, best_fwd_node, best_bwd_node
-                )
-                if success:
-                    best_meeting_point, best_meeting_cost, best_fwd_node, best_bwd_node = success
-            else:
-                # Expand backward search
-                success = self._expand_search(
-                    open_heap_bwd, open_nodes_dict_bwd, closed_set_bwd,
-                    open_nodes_dict_fwd, closed_set_fwd,
-                    False, count_bwd,
-                    x_min, x_max, y_min, y_max, z_min, z_max,
-                    min_intensity, max_intensity, reciprocal_min, reciprocal_max,
-                    min_step_cost, scale_x, scale_y, scale_z,
-                    best_meeting_point, best_meeting_cost, best_fwd_node, best_bwd_node
-                )
-                if success:
-                    best_meeting_point, best_meeting_cost, best_fwd_node, best_bwd_node = success
-            
-            # Check if search is complete
-            if best_meeting_point is not None:
-                # Check if we should continue searching or terminate
-                # terminate if fwd_heap.min + bwd_heap.min >= best_meeting_cost
-                min_f_fwd = open_heap_fwd[0][0] if open_heap_fwd else float('inf')
-                min_f_bwd = open_heap_bwd[0][0] if open_heap_bwd else float('inf')
+        _countPixelsSearched = 0
+
+        while not self.open_set_from_start.empty() and not self.open_set_from_goal.empty():
+            if self.is_canceled:
+                break
+
+            _countPixelsSearched += 1
+
+            from_start = self.open_set_from_start.qsize() < self.open_set_from_goal.qsize()
+            if from_start:
+                current_node = self.open_set_from_start.get()[2] # get the node object
+                #current_coordinates = tuple(current_node.point)
+                #self.close_set_hash_from_start.add(current_coordinates)
                 
-                if min_f_fwd + min_f_bwd >= best_meeting_cost:
-                    if verbose:
-                        print(f"Found meeting point at {best_meeting_point} with cost {best_meeting_cost}")
-                    self.found_path = True
-                    self._construct_bidirectional_path(best_fwd_node, best_bwd_node)
-                    break
-        
-        self.evaluated_nodes = count_fwd[0] + count_bwd[0]
-        return self.result
+                best_f_score_from_start = current_node.f_score_from_start
+                current_node_f_score = current_node.g_score_from_start + self._estimate_cost_to_goal(
+                    current_point=current_node.point, 
+                    goal_point=self.goal_point
+                )
 
-    def _expand_search(self, open_heap, open_nodes_dict, closed_set,
-                     other_open_dict, other_closed_set,
-                     is_forward, count_ref,
-                     x_min, x_max, y_min, y_max, z_min, z_max,
-                     min_intensity, max_intensity, reciprocal_min, reciprocal_max,
-                     min_step_cost, scale_x, scale_y, scale_z,
-                     best_meeting_point, best_meeting_cost, best_fwd_node, best_bwd_node):
-        """Expand search in one direction (forward or backward)"""
-        if not open_heap:
-            return None
-            
-        # Get node with lowest f_score
-        _, _, current_node = heapq.heappop(open_heap)
-        current_coordinates = tuple(current_node.point)
+                if (current_node_f_score >= self.best_path_length) or ((current_node.g_score_from_start + best_f_score_from_goal - self._estimate_cost_to_goal(current_node.point, self.start_point)) >= self.best_path_length):
+                    # reject the current node
+                    continue
+                else:
+                    # stabilize the current node
+                    self._expand_neighbors_of(current_node, from_start)
+            else:
+                current_node = self.open_set_from_goal.get()[2]
+                #current_coordinates = tuple(current_node.point)
+                #self.close_set_hash_from_goal.add(current_coordinates)
+                
+                best_f_score_from_goal = current_node.f_score_from_goal
+                current_node_f_score = current_node.g_score_from_goal + self._estimate_cost_to_goal(
+                    current_point=current_node.point, 
+                    goal_point=self.start_point
+                )
+
+                if current_node_f_score >= self.best_path_length or ((current_node.g_score_from_goal + best_f_score_from_start - self._estimate_cost_to_goal(current_node.point, self.goal_point)) >= self.best_path_length):
+                    # reject the current node
+                    continue
+                else:
+                    # stabilize the current node
+                    self._expand_neighbors_of(current_node, from_start)
+
+        # print(_countPixelsSearched)
+
+        if not self.touch_node:
+            if verbose:
+                print("NBA* Search finished without finding the path")
+            return []
         
-        # Skip if already processed
-        if current_coordinates in closed_set:
-            return None
-            
-        # Remove from open nodes dict
-        if current_coordinates in open_nodes_dict:
-            del open_nodes_dict[current_coordinates]
+        self._construct_path()
+        self.found_path = True
+        return self.result
+    
+    def _expand_neighbors_of(self, node: BidirectionalNode, from_start: bool):
+        """Finds the neighbors of a node (2D/3D)
+
+        Parameters
+        ----------
+        node : Node
+            the node whose neighbors we are interested in
         
-        # Get target for this search direction
-        target_point = self.goal_point if is_forward else self.start_point
+        Returns
+        -------
+        List[Node]
+            a list of nodes that are the neighbors of the given node
+        """
+        if len(node.point) == 2:
+            return self._expand_2D_neighbors_of(node, from_start)
+        else:
+            return self._expand_3D_neighbors_of(node, from_start)
+    
+    def _expand_2D_neighbors_of(self, node: BidirectionalNode, from_start: bool):
+        """Finds the neighbors of a 2D node
+
+        Parameters
+        ----------
+        node : Node
+            the node whose neighbors we are interested in
+
+        Returns
+        -------
+        List[Node]
+            a list of nodes that are the neighbors of the given node
         
-        # Find neighbors
-        if len(current_node.point) == 2:  # 2D
-            neighbor_data = find_2D_neighbors_optimized(
-                current_node.point, current_node.g_score, self.image,
-                x_min, x_max, y_min, y_max, 
-                min_intensity, max_intensity, reciprocal_min, reciprocal_max,
-                min_step_cost, scale_x, scale_y, target_point
-            )
-        else:  # 3D
-            neighbor_data = find_3D_neighbors_optimized(
-                current_node.point, current_node.g_score, self.image,
-                x_min, x_max, y_min, y_max, z_min, z_max,
-                min_intensity, max_intensity, reciprocal_min, reciprocal_max,
-                min_step_cost, scale_x, scale_y, scale_z, target_point
-            )
-        
-        # Store nodes from closed set for meeting point detection
-        closed_nodes_with_data = []
-        
-        # Process neighbors
-        for new_point, g_score, h_score in neighbor_data:
-            neighbor_coordinates = tuple(new_point)
-            
-            # Skip if already processed
-            if neighbor_coordinates in closed_set:
+        Notes
+        -----
+        - At max a given 2D node can have 8 neighbors-
+        vertical neighbors: top, bottom,
+        horizontal neighbors: left, right
+        diagonal neighbors: top-left, top-right, bottom-left, bottom-right
+        - Of course, we need to check for invalid cases where we can't move
+        in these directions
+        - 2D coordinates are of the type (y, x)
+        """
+        current_g_score = node.get_g(from_start) # optimization: will be the same for all neighbors
+
+        steps = [-1, 0, 1]
+        for xdiff in steps:
+            new_x = node.point[1] + xdiff
+            if new_x < self.image_stats.x_min or new_x > self.image_stats.x_max:
                 continue
             
-            # Apply weighted heuristic (makes search faster but less optimal)
-            f_score = g_score + self.weight_heuristic * h_score
-            
-            # Check if we should update this neighbor
-            if neighbor_coordinates in open_nodes_dict:
-                current_g, current_f, _ = open_nodes_dict[neighbor_coordinates]
-                if g_score >= current_g:  # If not a better path, skip
+            for ydiff in steps:
+                if xdiff == ydiff == 0:
                     continue
-            
-            # Either a new node or a better path to existing node
-            neighbor = Node(
-                point=new_point,
-                g_score=g_score,
-                h_score=h_score,
-                predecessor=current_node
-            )
-            
-            # Update open nodes dictionary
-            open_nodes_dict[neighbor_coordinates] = (g_score, f_score, neighbor)
-            
-            # Add to heap - increment the counter
-            count_ref[0] += 1
-            local_count = count_ref[0]
-            heapq.heappush(open_heap, (f_score, local_count, neighbor))
-            
-            # Update visualization queue if needed
-            if self.open_nodes is not None:
-                self.open_nodes.put(neighbor_coordinates)
-            
-            # Check if this node connects the two searches
-            if neighbor_coordinates in other_open_dict:
-                # We've found a potential meeting point in open set
-                other_g, _, other_node = other_open_dict[neighbor_coordinates]
-                
-                # Calculate total cost of path
-                meeting_cost = g_score + other_g
-                
-                # Check if this is the best meeting point so far
-                if meeting_cost < best_meeting_cost:
-                    if is_forward:
-                        new_best_fwd_node = neighbor
-                        new_best_bwd_node = other_node
-                    else:
-                        new_best_fwd_node = other_node
-                        new_best_bwd_node = neighbor
-                        
-                    return (neighbor_coordinates, meeting_cost, 
-                           new_best_fwd_node, new_best_bwd_node)
-        
-        # Mark as processed
-        closed_set.add(current_coordinates)
-        
-        return None
 
-    def _estimate_cost_to_goal(self, point: np.ndarray, target: np.ndarray) -> float:
-        """Estimate heuristic cost between two points"""
-        scale = self.scale
-        
-        if len(point) == 2:  # 2D
-            return self.cost_function.minimum_step_cost() * euclidean_distance_scaled(
-                point, target, scale[0], scale[1])
-        else:  # 3D
-            return self.cost_function.minimum_step_cost() * euclidean_distance_scaled(
-                point, target, scale[0], scale[1], scale[2] if len(scale) > 2 else 1.0)
+                new_y = node.point[0] + ydiff
+                if new_y < self.image_stats.y_min or new_y > self.image_stats.y_max:
+                    continue
 
-    def _construct_bidirectional_path(self, forward_node: Node, backward_node: Node):
-        """Construct path from meeting point of bidirectional search"""
-        # Forward path (start to meeting point)
-        forward_path = []
-        current = forward_node
-        while current is not None:
-            forward_path.append(current.point)
-            current = current.predecessor
+                new_point = np.array([new_y, new_x])
+
+                # current_g_score = node.get_g(from_start)
+                intensity_at_new_point = self.image[new_y, new_x]
+
+                cost_of_moving_to_new_point = self.cost_function.cost_of_moving_to(float(intensity_at_new_point))
+                if cost_of_moving_to_new_point < self.cost_function.minimum_step_cost():
+                    cost_of_moving_to_new_point = self.cost_function.minimum_step_cost()
+
+                tentative_g_score = current_g_score + math.sqrt((xdiff*xdiff) + (ydiff*ydiff)) * cost_of_moving_to_new_point
+                tentative_h_score = self._estimate_cost_to_goal(new_point, self.goal_point if from_start else self.start_point)
+                tentative_f_score = tentative_g_score + tentative_h_score
+                self._is_touch_node(new_point, tentative_g_score, tentative_f_score, node, from_start)
+
+    def _expand_3D_neighbors_of(self, node: BidirectionalNode, from_start: bool):
+        """Finds the neighbors of a 3D node
+
+        Parameters
+        ----------
+        node : Node
+            the node whose neighbors we are interested in
+
+        Returns
+        -------
+        List[Node]
+            a list of nodes that are the neighbors of the given node
         
-        # Reverse to get start-to-meeting-point order
-        forward_path.reverse()
+        Notes
+        -----
+        - At max a given 3D node can have 26 neighbors-
+        Imagine a 3X3X3 3D cube. It will contain 27 nodes.
+        If we consider the center node as the current node, it will have 26 neighbors
+        (excluding itself.)
+        - Of course, we need to check for invalid cases where we can't have
+        26 neighbors (when the current node is closer to,
+        or on the edges of the image)
+        - 3D coordinates are of the form (z, x, y)
+        """
+        current_g_score = node.get_g(from_start)
+
+        steps = [-1, 0, 1]
         
-        # Backward path (goal to meeting point)
-        backward_path = []
-        current = backward_node
-        while current is not None:
-            backward_path.append(current.point)
-            current = current.predecessor
+        for xdiff in steps:
+            new_x = node.point[2] + xdiff
+            if new_x < self.image_stats.x_min or new_x > self.image_stats.x_max:
+                continue
+
+            for ydiff in steps:
+                new_y = node.point[1] + ydiff
+                if new_y < self.image_stats.y_min or new_y > self.image_stats.y_max:
+                    continue
+
+                for zdiff in steps:
+                    if xdiff == ydiff == zdiff == 0:
+                        continue
+
+                    new_z = node.point[0] + zdiff
+                    if new_z < self.image_stats.z_min or new_z > self.image_stats.z_max:
+                        continue
+
+                    new_point = np.array([new_z, new_y, new_x])
+
+                    # current_g_score = node.get_g(from_start)
+                    intensity_at_new_point = self.image[new_z, new_y, new_x]
+
+                    cost_of_moving_to_new_point = self.cost_function.cost_of_moving_to(float(intensity_at_new_point))
+                    if cost_of_moving_to_new_point < self.cost_function.minimum_step_cost():
+                        cost_of_moving_to_new_point = self.cost_function.minimum_step_cost()
+
+                    tentative_g_score = current_g_score + math.sqrt((xdiff*xdiff) + (ydiff*ydiff) + (zdiff*zdiff)) * cost_of_moving_to_new_point
+
+                    tentative_h_score = self._estimate_cost_to_goal(new_point, self.goal_point if from_start else self.start_point)
+
+                    tentative_f_score = tentative_g_score + tentative_h_score
+                    self._is_touch_node(new_point, tentative_g_score, tentative_f_score, node, from_start)
+
+    def _is_touch_node(
+        self,
+        new_point: np.ndarray,
+        tentative_g_score: float,
+        tentative_f_score: float,
+        predecessor: BidirectionalNode,
+        from_start: bool
+    ):
+        """Modifies various parameters based on whether a given point
+        has already been explored from one direction
         
-        # Combine paths (remove duplicate meeting point)
-        self.result = forward_path + backward_path[1:]
+        Parameters
+        ----------
+        new_point : numpy ndarray
+            the coordinates of point that is being examined for touch node
+        tentative_g_score : float
+            the tentative g_score of the new point
+        tentative_f_score: float
+            the tentative f_score of the new point
+        predecessor : BidirectionalNode
+            the node that is predecessor of the current point
+        from_start : bool
+            True/False value representing our direction of traversal,
+            True meaning we are traversing in from start to goal,
+            False meaning traversal from goal to start
+        """
+        open_queue = self.open_set_from_start if from_start else self.open_set_from_goal
+        
+        new_point_coordinates = tuple(new_point)
+        already_there = self.node_at_coordinates.get(new_point_coordinates, None)
+
+        if not already_there:
+            new_node = BidirectionalNode(new_point)
+            new_node.set_g(tentative_g_score, from_start)
+            new_node.set_f(tentative_f_score, from_start)
+            new_node.set_predecessor(predecessor, from_start)
+            self._increment_node_priority(from_start)
+            open_queue.put((tentative_f_score, self._get_node_priority(from_start), new_node))
+            if self.open_nodes:
+                self.open_nodes.put(new_point_coordinates)
+            self.evaluated_nodes += 1
+            self.node_at_coordinates[new_point_coordinates] = new_node
+        # elif self._in_closed_set(new_point_coordinates, from_start):
+        #     return
+        elif already_there.get_f(from_start) > tentative_f_score:
+            already_there.set_g(tentative_g_score, from_start)
+            already_there.set_f(tentative_f_score, from_start)
+            already_there.set_predecessor(predecessor, from_start)
+            self._increment_node_priority(from_start)
+            open_queue.put((tentative_f_score, self._get_node_priority(from_start), already_there))
+            if self.open_nodes:
+                self.open_nodes.put(new_point_coordinates)
+            self.evaluated_nodes += 1
+            path_length = already_there.g_score_from_start + already_there.g_score_from_goal
+            if path_length < self.best_path_length:
+                self.best_path_length = path_length
+                self.touch_node = already_there
+    
+    def _get_node_priority(self, from_start: bool) -> int:
+        """Helper function to get a node's priority
+
+        Parameters
+        ----------
+        from_start : bool
+            if True, we want the node priority from start
+            else, we want the node priority from goal
+        
+        Returns
+        -------
+        int
+            returns the node priority from start/goal 
+            based on the value of from start
+        """
+        return self.node_priority_from_start if from_start else self.node_priority_from_goal
+    
+    def _increment_node_priority(self, from_start: bool):
+        """Helper function to increase the node priority
+        so that it can be assigned to the next node to be added
+        to the open set from start or open set from goal
+
+        Parameters
+        ----------
+        from_start : bool
+            if True, we increase the node priority from start
+            else, we increase the node priority from goal
+        """
+        if from_start:
+            self.node_priority_from_start += 1
+        else:
+            self.node_priority_from_goal += 1
+
+    def _in_closed_set(self, coordinates: Tuple, from_start: bool) -> bool:
+        if from_start:
+            return coordinates in self.close_set_hash_from_start
+        else:
+            return coordinates in self.close_set_hash_from_goal
+
+    def _estimate_cost_to_goal(self, current_point: np.ndarray, goal_point: np.ndarray) -> float:
+        """Estimates the heuristic cost (h_score) between a point
+        and the goal
+
+        Parameters
+        ----------
+        point : numpy ndarray
+            the point from which we have to estimate the heuristic cost to
+            goal
+
+        Returns
+        -------
+        float
+            returns the heuristic cost between the point and goal point
+        """
+        return self.cost_function.minimum_step_cost() * self.heuristic_function.estimate_cost_to_goal(
+            current_point=current_point, goal_point=goal_point
+        )
+    
+    def _construct_path(self):
+        """constructs the brightest path upon reaching
+        the touch node in two steps:
+        1. Backtracks its steps from the touch node to the start node
+        to insert the coordinates of all the points forming the brightest path
+        in the result always at the 0th position
+        2. Moves from touchnode to goal node to append the coordinates of
+        all the points forming the brightest path
+        """
+        current_node = self.touch_node
+
+        while not np.array_equal(current_node.point, self.start_point):
+            self.result.insert(0, current_node.point)
+            current_node = current_node.predecessor_from_start
+        
+        self.result.insert(0, self.start_point)
+
+        current_node = self.touch_node.predecessor_from_goal
+
+        while not np.array_equal(current_node.point, self.goal_point):
+            self.result.append(current_node.point)
+            current_node = current_node.predecessor_from_goal
+        
+        self.result.append(self.goal_point)

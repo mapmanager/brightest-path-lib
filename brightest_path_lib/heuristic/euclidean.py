@@ -2,7 +2,7 @@ from brightest_path_lib.heuristic import Heuristic
 import math
 import numpy as np
 from typing import Tuple
-from numba import njit, float64
+from brightest_path_lib.checkNumba import njit
 
 # Ultra-simple but very fast 2D distance calculation
 @njit(fastmath=True)
@@ -15,7 +15,7 @@ def _fast_euclidean_distance_2d(current_y, current_x, goal_y, goal_x, scale_x, s
 # Ultra-simple but very fast 3D distance calculation
 @njit(fastmath=True)
 def _fast_euclidean_distance_3d(current_z, current_y, current_x, goal_z, goal_y, goal_x, 
-                               scale_x, scale_y, scale_z):
+                            scale_x, scale_y, scale_z):
     """Minimal, efficient 3D Euclidean distance calculation"""
     dx = (goal_x - current_x) * scale_x
     dy = (goal_y - current_y) * scale_y

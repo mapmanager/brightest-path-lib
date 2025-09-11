@@ -31,8 +31,8 @@ import math
 import numpy as np
 from queue import PriorityQueue, Queue
 from typing import List, Tuple
-from brightest_path_lib.cost import ReciprocalTransonic
-from brightest_path_lib.heuristic import EuclideanTransonic
+from brightest_path_lib.cost import Reciprocal
+from brightest_path_lib.heuristic import Euclidean
 from brightest_path_lib.image import ImageStats
 from brightest_path_lib.input import CostFunction, HeuristicFunction
 from brightest_path_lib.node import Node
@@ -124,12 +124,12 @@ class AStarSearch:
         self.open_nodes = open_nodes
 
         if cost_function == CostFunction.RECIPROCAL:
-            self.cost_function = ReciprocalTransonic(
+            self.cost_function = Reciprocal(
                 min_intensity=self.image_stats.min_intensity, 
                 max_intensity=self.image_stats.max_intensity)
         
         if heuristic_function == HeuristicFunction.EUCLIDEAN:
-            self.heuristic_function = EuclideanTransonic(scale=self.scale)
+            self.heuristic_function = Euclidean(scale=self.scale)
         
         self.is_canceled = False
         self.found_path = False
