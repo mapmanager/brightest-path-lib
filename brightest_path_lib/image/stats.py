@@ -67,7 +67,6 @@ try:
         return x_min, x_max, y_min, y_max, z_min, z_max
 
 except ImportError:
-    print(f"stats import error")
     # Fallback functions without numba optimization
     def compute_image_intensity_range(image):
         """Efficiently compute min and max intensity of an image"""
