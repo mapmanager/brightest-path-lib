@@ -1,5 +1,4 @@
 from transonic import boost
-
 from brightest_path_lib.cost import Cost
 
 @boost

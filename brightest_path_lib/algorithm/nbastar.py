@@ -1,6 +1,8 @@
 # algorithm/nbastar.py
 
-"""The New Bidirectional A* Search Algorithm is an improvement over the
+""" 
+
+The New Bidirectional A* Search Algorithm is an improvement over the
 original Bidirectional A* Search algorithm, which is a variation of the
 A* Search algorithm that searches from both the start and goal nodes 
 simultaneously in order to find the shortest path more efficiently.
@@ -48,7 +50,6 @@ from brightest_path_lib.heuristic import Euclidean
 from brightest_path_lib.image import ImageStats
 from brightest_path_lib.input import CostFunction, HeuristicFunction
 from brightest_path_lib.node import Node, BidirectionalNode
-
 
 class NBAStarSearch:
     """NBA* Implementation
