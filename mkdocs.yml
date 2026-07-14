@@ -12,7 +12,16 @@ theme:
   features:
     - content.code.copy
     - navigation.instant
-
+  palette:
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+        
 plugins:
   - mkdocstrings
   - mkdocs-jupyter
@@ -27,6 +36,11 @@ markdown_extensions:
   - pymdownx.superfences
   - attr_list
   - md_in_html
+
+extra:
+  analytics:
+    provider: google
+    property: G-8057JCR6M8
 
 nav:
   - Introduction: index.md

@@ -12,9 +12,9 @@ A Python package of path-finding algorithms to find the brightest path between p
 
 ## Getting Started
 
-To install and get started with the `brightest-path-lib`, please visit the [documentation website](https://mapmanager.net/brightest-path-lib/installation/).
+To install and get started with the `brightest-path-lib`, please visit the [documentation website](https://mapmanager.github.io/brightest-path-lib).
 
-For more detailed instructions on how to use the `brightest-path-lib`, please see the [API documentation](https://mapmanager.net/brightest-path-lib/api_docs/).
+For more detailed instructions on how to use the `brightest-path-lib`, please see the [API documentation](https://mapmanager.github.io/brightest-path-lib/api_docs/).
 
 ## Contributing
 
